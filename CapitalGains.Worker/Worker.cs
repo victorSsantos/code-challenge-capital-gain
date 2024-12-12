@@ -1,13 +1,32 @@
-﻿using CapitalGains.Core.Entities.Enums;
-using CapitalGains.Core.Interfaces;
+using CapitalGains.Core.Entities.Enums;
 using CapitalGains.Core.Entities;
+using CapitalGains.Core.Interfaces;
 
-namespace CapitalGains.Processor.Processors 
+namespace CapitalGains.Worker
 {
-    public class OperationProcessor(IOperationHandler handler, IOperationConsole console) : IOperationProcessor
+    public class Worker(ILogger<Worker> logger, IOperationHandler handler, IOperationConsole console) : BackgroundService
     {
+        private readonly ILogger<Worker> _logger = logger;
         private readonly IOperationHandler _handler = handler;
         private readonly IOperationConsole _console = console;
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await Task.Run(() => 
+                { 
+                    try
+                    {
+                        Execute();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }, stoppingToken);             
+            }
+        }
 
         public void Execute()
         {
