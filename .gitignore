@@ -1,7 +1,11 @@
-# Build Results
+# Build results
 bin/
 obj/
 out/
+publish/
+publish-linux/
+publish-windows/
+publish-osx/
 
 # User-specific files
 *.user
@@ -60,3 +64,10 @@ Thumbs.db
 ehthumbs.db
 .DS_Store
 Icon?
+
+# Rider / JetBrains
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
