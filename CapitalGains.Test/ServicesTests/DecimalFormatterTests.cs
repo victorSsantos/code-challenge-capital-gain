@@ -3,9 +3,9 @@ using CapitalGains.Application.Utils;
 
 namespace CapitalGains.Test.ServicesTests;
 
-public class DecimalWithTwoDecimalsConverterTests
+public class DecimalFormatterTests
 {
-    private readonly DecimalWithTwoDecimalsConverter _converter = new();
+    private readonly DecimalFormatter _converter = new();
 
     [Fact]
     public void ReadJson_ShouldReadDecimalValue_WhenValidInput()

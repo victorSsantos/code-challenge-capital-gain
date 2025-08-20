@@ -2,7 +2,7 @@
 
 namespace CapitalGains.Application.Utils;
 
-public class DecimalWithTwoDecimalsConverter : JsonConverter<decimal>
+public class DecimalFormatter : JsonConverter<decimal>
 {
     public override decimal ReadJson(JsonReader reader, Type objectType, decimal existingValue, bool hasExistingValue, JsonSerializer serializer)
     {

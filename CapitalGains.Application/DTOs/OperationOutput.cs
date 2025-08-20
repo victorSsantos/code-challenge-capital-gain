@@ -6,6 +6,6 @@ namespace CapitalGains.Application.DTOs;
 public class OperationOutput(decimal tax)
 {
     [JsonProperty("tax")]
-    [JsonConverter(typeof(DecimalWithTwoDecimalsConverter))]
+    [JsonConverter(typeof(DecimalFormatter))]
     public decimal tax = tax;
 }

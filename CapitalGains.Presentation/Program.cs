@@ -30,7 +30,7 @@ public class Program
         }
         catch (OperationCanceledException)
         {
-            return 130; // (Ctrl+C)
+            return 130;
         }
         catch (Exception ex)
         {
