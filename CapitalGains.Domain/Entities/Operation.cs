@@ -1,15 +1,15 @@
-﻿using CapitalGains.Core.Entities.Enums;
+﻿using CapitalGains.Domain.Entities.Enums;
 
-namespace CapitalGains.Core.Entities;
+namespace CapitalGains.Domain.Entities;
 
 public class Operation
 {
     public OperationType OperationType { get; }
-    public double UnitCost { get; }
+    public decimal UnitCost { get; }
     public int Quantity { get; }
-    public double Tax { get; set; }
+    public decimal Tax { get; set; }
 
-    public Operation(OperationType operationType, double unitCost, int quantity, double tax = 0.0)
+    public Operation(OperationType operationType, decimal unitCost, int quantity, decimal tax = 0.0M)
     {
         if (unitCost <= 0)
             throw new ArgumentException("Unit Cost must be a number greater than 0.");

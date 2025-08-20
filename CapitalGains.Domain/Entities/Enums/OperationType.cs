@@ -1,4 +1,4 @@
-﻿namespace CapitalGains.Core.Entities.Enums
+﻿namespace CapitalGains.Domain.Entities.Enums
 {
     public enum OperationType
     {

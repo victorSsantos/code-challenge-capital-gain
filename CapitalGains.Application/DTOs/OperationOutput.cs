@@ -1,11 +1,11 @@
-﻿using CapitalGains.Application.DTOs.Converters;
+﻿using CapitalGains.Application.Utils;
 using Newtonsoft.Json;
 
 namespace CapitalGains.Application.DTOs;
 
-public class OperationOutput(double tax)
+public class OperationOutput(decimal tax)
 {
     [JsonProperty("tax")]
-    [JsonConverter(typeof(DoubleWithTwoDecimalsConverter))]
-    public double tax = tax;
+    [JsonConverter(typeof(DecimalWithTwoDecimalsConverter))]
+    public decimal tax = tax;
 }
