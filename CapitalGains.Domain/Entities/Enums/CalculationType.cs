@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace CapitalGains.Domain.Entities.Enums;
 
-namespace CapitalGains.Domain.Entities.Enums
+public enum CalculationType
 {
-    public enum CalculationType
-    {
-        average,
-        gain,
-        tax
-    }
+    average,
+    gain,
+    tax
 }

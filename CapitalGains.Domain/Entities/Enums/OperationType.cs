@@ -1,8 +1,7 @@
-﻿namespace CapitalGains.Domain.Entities.Enums
+﻿namespace CapitalGains.Domain.Entities.Enums;
+
+public enum OperationType
 {
-    public enum OperationType
-    {
-        buy = 0,
-        sell = 1
-    }
+    buy,
+    sell
 }

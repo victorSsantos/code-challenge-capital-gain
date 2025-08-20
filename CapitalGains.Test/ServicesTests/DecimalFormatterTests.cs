@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using CapitalGains.Application.Utils;
+using CapitalGains.Application.CapitalGainApp.Utils;
 
 namespace CapitalGains.Test.ServicesTests;
 

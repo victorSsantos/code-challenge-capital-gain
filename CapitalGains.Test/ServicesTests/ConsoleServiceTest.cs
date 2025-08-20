@@ -1,15 +1,13 @@
 using Newtonsoft.Json;
-using CapitalGains.Application.Services;
 using CapitalGains.Domain.Entities;
 using CapitalGains.Domain.Entities.Enums;
-using CapitalGains.Domain.Interfaces;
-using System;
+using CapitalGains.Application.CapitalGainApp.Services;
 
 namespace CapitalGains.Test.ServicesTests;
 
-public class ConsoleServiceTest ()
+public class ConsoleServiceTest
 {
-    private readonly IConsoleService _console = new ConsoleService();
+    private readonly ConsoleService _console = new();
 
     [Fact]
     public void ReadInput_ShouldReadInputWithSuccess_WhenValidData()
@@ -18,7 +16,6 @@ public class ConsoleServiceTest ()
         var input = $"[{{\"operation\":\"buy\",\"unit-cost\":10.0,\"quantity\":100}}]{Environment.NewLine}" +
                     $"[{{\"operation\":\"buy\",\"unit-cost\":10.0,\"quantity\":100}}]{Environment.NewLine}" +
                     $"[{{\"operation\":\"buy\",\"unit-cost\":10.0,\"quantity\":100}}]";
-        var operations = new List<List<Operation>>();
 
         var operationExpected = new Operation(OperationType.buy, 10.0M, 100);
         var countExpected = 3;
@@ -26,7 +23,7 @@ public class ConsoleServiceTest ()
         // Act
         using var stringReader = new StringReader(input);
         Console.SetIn(stringReader);
-        _console.ReadInput(operations);
+        var operations = _console.ReadIn();
 
         // Assert
         Assert.Single(operations[0]);
@@ -41,12 +38,11 @@ public class ConsoleServiceTest ()
     {
         // Arrange
         string? input = Environment.NewLine;
-        List<List<Operation>> operations = [];
 
         // Act
         using var stringReader = new StringReader(input);
         Console.SetIn(stringReader);
-        _console.ReadInput(operations);
+        var operations = _console.ReadIn();
 
         // Assert
         Assert.Empty(operations);
@@ -62,7 +58,7 @@ public class ConsoleServiceTest ()
         // Act
         using var stringReader = new StringReader(input);
         Console.SetIn(stringReader);
-        var exception = Assert.Throws<JsonException>(() =>  _console.ReadInput(operations));
+        var exception = Assert.Throws<JsonException>(() => operations = _console.ReadIn());
 
         // Assert
         Assert.Contains("Error to Deserialize Object", exception.Message);
@@ -103,7 +99,7 @@ public class ConsoleServiceTest ()
         using var stringWriter = new StringWriter();
         Console.SetOut(stringWriter);
 
-        _console.WriteOutput(operations);
+        _console.WriteOut(operations);
 
         // Assert
         var output = stringWriter.ToString().Trim();

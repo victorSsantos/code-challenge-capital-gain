@@ -1,49 +1,39 @@
-using CapitalGains.Domain.Entities.Enums;
-using CapitalGains.Domain.Entities;
-using CapitalGains.Domain.Interfaces;
+using CapitalGains.Application.CapitalGainApp.Interfaces;
 
 namespace CapitalGains.Presentation;
 
-public class Client(ICalculationService calculator, IConsoleService console)
+public sealed class Client(ICapitalGainApp capitalGainApp)
 {
-    private readonly ICalculationService _calculator = calculator;
-    private readonly IConsoleService _console = console;
+    private const int ExitOk = 0;
+    private const int ExitError = 1;
+    private const int ExitCanceled = 130;
 
-    public void ProcessOperations(CancellationToken cancellationToken = default)
+    private readonly ICapitalGainApp _capitalGainApp = capitalGainApp;
+
+    public int Run()
     {
-        List<List<Operation>> operations = [];
+        using var cts = new CancellationTokenSource();
 
-        _console.ReadInput(operations);
-        
-        var po = new ParallelOptions
+        Console.CancelKeyPress += (_, e) =>
         {
-            CancellationToken = cancellationToken,
-            MaxDegreeOfParallelism = Environment.ProcessorCount
+            e.Cancel = true;
+            if (!cts.IsCancellationRequested) cts.Cancel();
         };
-        
-        Parallel.ForEach(operations, po, line =>
-        {
-            var balance = new OperationsBalance();
 
-            for (int i = 0; i < line.Count; i++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var op = line[i];
-        
-                switch (op.OperationType)
-                {
-                    case OperationType.buy:
-                        _calculator.CalculateBuyOperation(op, balance);
-                        break;
-                    case OperationType.sell:
-                        _calculator.CalculateSellOperation(op, balance);
-                        break;
-                    default:
-                        throw new InvalidOperationException($"Unsupported operation type: {op.OperationType}");
-                }
-            }
-        });
-        
-        _console.WriteOutput(operations);
+        try
+        {
+            _capitalGainApp.Process(cts.Token);
+            return ExitOk;
+        }
+        catch (OperationCanceledException) when (cts.IsCancellationRequested)
+        {
+            Console.Error.WriteLine("[WARN] Operation canceled.");
+            return ExitCanceled;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[ERROR] {ex.Message}");
+            return ExitError;
+        }
     }
 }

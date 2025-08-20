@@ -4,6 +4,6 @@ namespace CapitalGains.Domain.Interfaces;
 
 public interface IConsoleService
 {
-    void ReadInput(List<List<Operation>> operationsInput);
-    void WriteOutput(List<List<Operation>> operationsOutput); 
+    List<List<Operation>> ReadIn(CancellationToken cancellationToken = default);
+    void WriteOut(List<List<Operation>> operationsOutput, CancellationToken cancellationToken = default);
 }

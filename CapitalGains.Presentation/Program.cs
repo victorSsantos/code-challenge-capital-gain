@@ -1,42 +1,17 @@
 using CapitalGains.Domain.Interfaces;
-using CapitalGains.Application.Services;
+using CapitalGains.Application.CapitalGainApp.Services;
+using CapitalGains.Application.CapitalGainApp.Interfaces;
+using CapitalGains.Application.CapitalGainApp;
+using CapitalGains.Presentation;
 
-namespace CapitalGains.Presentation;
+var builder = Host.CreateApplicationBuilder(args);
 
-public class Program
-{
-    public static int Main(string[] args)
-    {
-        var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddSingleton<Client>();
+builder.Services.AddSingleton<ICapitalGainApp, CapitalGainApp>();
+builder.Services.AddSingleton<IConsoleService, ConsoleService>();
+builder.Services.AddSingleton<ICalculationService, CalculationService>();
 
-        builder.Services.AddSingleton<ICalculationService, CalculationService>();
-        builder.Services.AddSingleton<IConsoleService, ConsoleService>();
-        builder.Services.AddSingleton<Client>();
+using var host = builder.Build();
+var client = host.Services.GetRequiredService<Client>();
 
-        var host = builder.Build();
-
-        using var cts = new CancellationTokenSource();
-        Console.CancelKeyPress += (sender, e) =>
-        {
-            e.Cancel = true;
-            cts.Cancel();
-        };
-
-        try
-        {
-            var client = host.Services.GetRequiredService<Client>();
-            client.ProcessOperations(cts.Token);
-            return 0; 
-        }
-        catch (OperationCanceledException)
-        {
-            return 130;
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"[ERRO] {ex.Message}");
-            Console.Error.WriteLine(ex);
-            return 1;
-        }
-    }
-}
+return client.Run();
