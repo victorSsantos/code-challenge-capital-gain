@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		.dockerignore = .dockerignore
 		.gitignore = .gitignore
 		build.sh = build.sh
-		compose.yaml = compose.yaml
 		Dockerfile = Dockerfile
 		README.md = README.md
 	EndProjectSection

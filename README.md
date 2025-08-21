@@ -23,9 +23,9 @@ Aqui estão algumas decisões técnicas que orientaram o design:
 
 ### **2. Organização por Pacotes**
 A aplicação foi dividida em pacotes para garantir uma separação clara de responsabilidades:
-- **CapitalGains.Processor**: Responsável por iniciar a aplicação e coordenar os processos principais.
+- **CapitalGains.Presentation**: Responsável por iniciar a aplicação.
 - **CapitalGains.Application**: Contém os serviços, DTOs e lógica de negócio.
-- **CapitalGains.Core**: Define as entidades principais e as interfaces que descrevem o comportamento dos serviços.
+- **CapitalGains.Domain**: Define as entidades principais e as interfaces que descrevem o comportamento dos serviços.
 - **CapitalGains.Test**: Contém testes automatizados para garantir a integridade e confiabilidade do sistema.
 
 ### **3. Arquitetura Baseada em Interfaces**
@@ -35,36 +35,40 @@ A aplicação foi dividida em pacotes para garantir uma separação clara de res
 - Classes `OperationInput` e `OperationOutput` foram introduzidas para encapsular os dados de entrada e saída.
 
 ### **5. Lógica de Negócios**
-- A lógica de cálculos para compra e venda de ações está concentrada na classe `OperationHandler`, garantindo clareza e encapsulamento.
+- A lógica de cálculos para compra e venda de ações está concentrada na classe `CalculationService`, garantindo clareza e encapsulamento.
 
 ---
 
 ## **Estrutura da Aplicação**
 
-### **Pacote: CapitalGains.Processor**
+### **Pacote: CapitalGains.Presentation**
 - **Program.cs**: Classe principal que inicia a aplicação e configura as dependências.
-- **OperationProcessor.cs**: Coordena o fluxo da aplicação, processando as operações e gerenciando as entradas e saídas.
+- **Client.cs**: Client para executar app da camada Application.
 
 ### **Pacote: CapitalGains.Application**
 - **DTOS**:
   - `OperationInput`: Representa uma operação recebida no input.
   - `OperationOutput`: Representa o formato de saída com as taxas calculadas.
 - **Serviços**:
-  - `OperationHandler`: Implementação da lógica de compra e venda.
-  - `OperationConsole`: Implementação de entrada e saída pelo console.
+  - `CalculationService`: Implementação da lógica de compra e venda.
+  - `ConsoleService`: Implementação de entrada e saída pelo console.
+- **App**:
+  - `CapitalGainApp`: Implementação da orquestração da aplicação, responsável por processar as operações.
+- **Interfaces**:
+  - `ICapitalGainApp`: Define métodos do app de orquestração.
 
-### **Pacote: CapitalGains.Core**
+### **Pacote: CapitalGains.Domain**
 - **Entities**:
   - `Operation`: Representa uma operação de compra ou venda.
+  - `OperationsBalance`: Representa o saldo de operações, incluindo o custo médio e a quantidade de ações.
 - **Enums**:
   - `OperationType`: Define os tipos de operação (`buy` ou `sell`).
 - **Interfaces**:
-  - `IOperationConsole`: Define métodos para entrada e saída de dados via console.
-  - `IOperationHandler`: Define métodos para lidar com operações de compra e venda.
-  - `IOperationProcessor`: Define o método de execução do processo principal.
+  - `IConsoleService`: Define métodos para entrada e saída de dados via console.
+  - `ICalculationService`: Define métodos para lidar com operações de compra e venda.
 
 ### **Pacote: CapitalGains.Test**
-- Inclui testes unitários para validar cada funcionalidade da aplicação.
+- Inclui testes unitários e de integração para validar cada funcionalidade da aplicação.
 
 ---
 
@@ -84,15 +88,15 @@ Isso ocorre porque o programa percorre cada linha e, em cada linha, processa tod
 
 ### **Análise das principais Classes**
 
-**1. `OperationProcessor`**
+**1. `CapitalGainApp`**
 - **Função:** Coordena o fluxo da aplicação e processa as operações.
 - **Complexidade:** **O(N × M / P)**, pois lê e itera sobre todas as operações para cada linha, porem executa cada linha em paralelo a depender da quantidade de threads disponiveis.
 
-**2. `OperationHandler`**
+**2. `CalculationService`**
 - **Função:** Manipula a lógica de compra e venda de ações, calculando o custo médio e as taxas.
 - **Complexidade:** **O(N)** por linha, já que cada operação é processada individualmente com operações constantes.
 
-**3. `OperationConsole`**
+**3. `ConsoleService`**
 - **Função:** Lê a entrada e escreve a saída dos dados.
 - **Complexidade:** **O(M × N)**, devido à desserialização e serialização de todas as operações.
 
@@ -113,55 +117,41 @@ Antes de começar, certifique-se de que o ambiente está configurado corretament
   dotnet --version
   ```
 
-- **Docker e Docker Compose**  
+- **Docker**  
   - Faça o download e instale a partir do site oficial do Docker: [Download Docker](https://www.docker.com/products/docker-desktop).  
   - Verifique se está instalado corretamente executando no terminal:
   ```bash
   docker --version
-  docker compose version
    ```
   
 ---
 
 ## **Instruções para Compilar e Executar o Projeto**
 
-### **1. Compilando o Projeto Localmente**
+### **1. Compilando e executando o Projeto com WSL/Linux **
 
 1. Abra o terminal ou prompt de comando.
 2. Navegue até o diretório raiz do projeto.
 3. Compile o projeto utilizando o seguinte comando:
 ```bash
-dotnet build
+./build.sh
 ```
-4. Após a compilação, os binários serão gerados no diretório bin/Debug/net8.0.
-
-### **2. Subindo a Imagem do Projeto para o Docker**
-
-1. Certifique-se de estar no diretório raiz da aplicação, onde está localizado o arquivo Dockerfile e/ou docker-compose.yml.
-2. Garantir que a porta 8080 esteja liberada.
-3. Suba a aplicação no Docker utilizando o comando abaixo:
+4. Após a compilação, arquivo sera publicado na pasta do projeto presentation em publish-linux.
+5. Navegar até pasta do arquivo publicado.
+6. Executar a aplicação utilizando o comando:
 ```bash
-docker compose up --build
+./capital-gains > input.txt
 ```
+### **2. Compilando e executando o Projeto com Docker**
 
-### **3. Executando a Aplicação para Processar o Arquivo de Operações**
-
-1. Certifique-se de que o arquivo de entrada input.txt está no mesmo diretório onde o comando será executado.
-- Exemplo do conteúdo esperado em input.txt:
-```text
-[{"operation":"buy","unit-cost":20.00,"quantity":50},{"operation":"sell","unit-cost":20.00,"quantity":50}]
-[{"operation":"buy","unit-cost":10.00,"quantity":100},{"operation":"sell","unit-cost":15.00,"quantity":50},{"operation":"buy","unit-cost":10.00,"quantity":50}]
-[{"operation":"buy","unit-cost":15.00,"quantity":200},{"operation":"sell","unit-cost":10.00,"quantity":100}]
-
-```
-2. Execute o seguinte comando no terminal para rodar a aplicação no Docker:
+1. Certifique-se de estar no diretório raiz da aplicação, onde está localizado o arquivo Dockerfile.
+2. Buildar a aplicação com o Docker utilizando o comando abaixo:
 ```bash
-docker run --rm -i capitalgains-server ./capital-gains < input.txt
+docker build -t capital-gains .
 ```
-3. A saída será exibida diretamente no terminal, processando as operações contidas no arquivo input.txt.
-- Exemplo de saida esperada para cada linha do input.txt:
-```text
-[{"tax":0.00},{"tax":80000.00},{"tax":0.00},{"tax":60000.00}]
+3. Após o build, execute o contêiner com o seguinte comando:
+```bash
+ docker run --rm -i -v "$PWD:/work" -w /work capital-gains < input.txt
 ```
 
 ---

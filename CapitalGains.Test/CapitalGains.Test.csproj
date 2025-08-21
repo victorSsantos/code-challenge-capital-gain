@@ -22,6 +22,13 @@
   <ItemGroup>
     <ProjectReference Include="..\CapitalGains.Application\CapitalGains.Application.csproj" />
     <ProjectReference Include="..\CapitalGains.Domain\CapitalGains.Domain.csproj" />
+    <ProjectReference Include="..\CapitalGains.Presentation\CapitalGains.Presentation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="TestAssets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   
   <ItemGroup>

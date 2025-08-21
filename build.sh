@@ -15,5 +15,5 @@ cd publish-linux
 mv CapitalGains.Presentation capital-gains
 chmod +x capital-gains
 
-echo "Binário gerado em: $(pwd)/capital-gains"
-echo "Rode com: ./capital-gains < ../input.txt > output.json"
+echo "Binary generated at: $(pwd)/capital-gains"
+echo "Execute with: ./capital-gains < input.txt"

@@ -12,7 +12,7 @@ public class CapitalGainApp(ICalculationService calculator, IConsoleService cons
 
     public void Process(CancellationToken cancelToken = default)
     {
-        var operations = _console.ReadIn();
+        var operations = _console.ReadIn(cancelToken);
 
         if (operations is null || operations.Count == 0)
             return;
@@ -45,9 +45,7 @@ public class CapitalGainApp(ICalculationService calculator, IConsoleService cons
             }
         });
 
-        cancelToken.ThrowIfCancellationRequested();
-
-        if (operations.Any())
-            _console.WriteOut(operations);
+        if (operations.Count > 0)
+            _console.WriteOut(operations, cancelToken);
     }
 }

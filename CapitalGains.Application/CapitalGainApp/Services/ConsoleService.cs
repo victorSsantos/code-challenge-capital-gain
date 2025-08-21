@@ -26,12 +26,8 @@ public class ConsoleService : IConsoleService
                         .ToList();
 
                     operationsInput.Add(operations);
-                }                  
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
+                }
+            }  
         }
         catch (JsonException e)
         {
@@ -43,19 +39,21 @@ public class ConsoleService : IConsoleService
 
     public void WriteOut(List<List<Operation>> operations, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var operatiosOutput = operations
-            .SelectMany(row => row.Select(y => new OperationOutput(y.Tax)))
-            .ToList();
-
-        if(operatiosOutput.Count == 0)
+        if (operations is null || operations.Count == 0)
             return;
 
-        var json = JsonConvert.SerializeObject(operatiosOutput, Formatting.None);
+        var writer = Console.Out;
 
-        Console.Out.WriteLine(json);
-        Console.Out.Flush();
-        
+        foreach (var row in operations)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var outputs = row.Select(op => new OperationOutput(op.Tax));
+            var json = JsonConvert.SerializeObject(outputs, Formatting.None);
+
+            writer.WriteLine(json);
+        }
+
+        writer.Flush();
     }
 }
